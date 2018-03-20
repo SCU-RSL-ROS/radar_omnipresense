@@ -21,9 +21,8 @@
 #include <sstream> 
 #include <string>
 #include <thread>
-#include "LinuxCommConnection/src/CommConnection.h"
-#include "LinuxCommConnection/src/SerialConnection.h"
-#include "LinuxCommConnection/src/NetworkConnection.h"
+#include <LinuxCommConnection/CommConnection.h>
+#include <LinuxCommConnection/SerialConnection.h>
 #include "rapidjson/document.h"
 
 using namespace rapidjson;
