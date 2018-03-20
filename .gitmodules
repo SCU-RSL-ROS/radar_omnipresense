@@ -1,3 +1,6 @@
 [submodule "src/LinuxCommConnection"]
 	path = src/LinuxCommConnection
 	url = https://github.com/RyanLoringCooper/LinuxCommConnection.git
+[submodule "good"]
+	path = src/LinuxCommConnection
+	url = https://github.com/SCU-RSL-ROS/LinuxCommConnection.git
