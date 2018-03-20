@@ -101,8 +101,6 @@ find_package(rapidjson REQUIRED)
 ## Declare things to be passed to dependent projects
 ## INCLUDE_DIRS: uncomment this if your package contains header files
 ## LIBRARIES: libraries you create in this project that dependent projects also need
-## CATKIN_DEPENDS: catkin_packages dependent projects also need
-## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES radar_data
@@ -110,19 +108,9 @@ catkin_package(
 #  DEPENDS system_lib
 )
 
-set(COMMDIR src/LinuxCommConnection/src/)
-add_subdirectory(${COMMDIR})
-set(COMLIB 
-	${COMMDIR}SerialConnection.h 
-	${COMMDIR}SerialConnection.cpp 
-	${COMMDIR}CommConnection.h 
-	${COMMDIR}CommConnection.cpp 
-	#${COMMDIR}Linux/SerialConnection.cpp 
-	#PARENT_SCOPE
-)
-
-add_executable(radar_publisher src/radar_publisher.cpp ${COMLIB})
-target_link_libraries(radar_publisher ${catkin_LIBRARIES} ${RAPIDJSONDIR})
+set(LCC_LINK_FLAG "-lLinuxCommConnection")
+add_executable(radar_publisher src/radar_publisher.cpp)
+target_link_libraries(radar_publisher ${catkin_LIBRARIES} ${RAPIDJSONDIR} ${LCC_LINK_FLAG})
 add_dependencies(radar_publisher OPS241A_radar_generate_messages_cpp)
 
 ##add_executable(radar_subscriber src/radar_subscriber.cpp)
