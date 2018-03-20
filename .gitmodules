@@ -1,0 +1,3 @@
+[submodule "src/LinuxCommConnection"]
+	path = src/LinuxCommConnection
+	url = https://github.com/RyanLoringCooper/LinuxCommConnection.git
