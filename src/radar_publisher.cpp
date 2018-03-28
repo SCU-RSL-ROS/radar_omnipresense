@@ -37,20 +37,20 @@ bool fft_on;
 bool api(OPS241A_radar::SendAPICommand::Request &req, OPS241A_radar::SendAPICommand::Response &res) 
 {
 	res.response = "false";
-  if (req.command == "Oj")
-  {
-     ROS_INFO("Cannot turn JSON mode off");
-     return true;
-  }
-  else if (req.command == "OF")
+  	if (req.command == "Oj")
+  	{
+     		ROS_INFO("Cannot turn JSON mode off");
+     		return true;
+  	}
+ 	else if (req.command == "OF")
   	{ 
   		fft_on = 1;
   	}
-  else if (req.command == "Of")
-  	{
+  	else if (req.command == "Of")
+ 	{
   		fft_on = 0;
   	}
-  //writes the api input to the serial port
+  	//writes the api input to the serial port
 	con->write(std::string(req.command.c_str())); 
 	con->clearBuffer();
 	//output for user to see that correct input was sent to the radar
@@ -64,10 +64,10 @@ bool api(OPS241A_radar::SendAPICommand::Request &req, OPS241A_radar::SendAPIComm
 	bool open_brace = found_open_brace == std::string::npos;
 	bool close_brace = found_close_brace == std::string::npos;
 	if ((open_brace) && (close_brace))
-		{
-			ROS_INFO("ERROR: Response not recieved");
-			return true;
-		}
+	{
+		ROS_INFO("ERROR: Response not recieved");
+		return true;
+	}
 	std::string whole_msg = command_response.substr(found_open_brace,found_close_brace+1);
 	//default template parameter uses UTF8 and MemoryPoolAllocator. //creates a document DOM instant called doc
 	Document doc; 
@@ -75,10 +75,10 @@ bool api(OPS241A_radar::SendAPICommand::Request &req, OPS241A_radar::SendAPIComm
  	doc.Parse(whole_msg.c_str());
 	//case for when the radar outputs the JSON string {"OutputFeature":"@"}. This is not compatible with parsing into the message.
 	if (doc.HasMember("OutputFeature")) 
- 		{
- 		  ROS_INFO("Recieved: %s", whole_msg.c_str());
- 		  res.response = "true";
- 		}
+ 	{
+ 		ROS_INFO("Recieved: %s", whole_msg.c_str());
+ 		res.response = "true";
+ 	}
   return true;
 }
 
@@ -87,8 +87,6 @@ bool api(OPS241A_radar::SendAPICommand::Request &req, OPS241A_radar::SendAPIComm
 
 void process_json(OPS241A_radar::radar_data *data, std::string single_msg)
 {
-	//ROS_INFO("Msg: %s", single_msg.c_str());
-	
 	//default template parameter uses UTF8 and MemoryPoolAllocator. //creates a document DOM instant called document
 	Document document; 
  	//document.Parse(msg.data->c_str()); //parsing the json string msg.data with format{"speed":#.##,"direction":"inbound (or outbound)","time":###,"tick":###}
@@ -107,10 +105,10 @@ void process_json(OPS241A_radar::radar_data *data, std::string single_msg)
 	//fills in info.direction with a converted c++ string and only does so if direction is not empty.
 	if (dir)  
 	{
-	  //define a constant character array(c language)
+	  	//define a constant character array(c language)
 		const char* direction; 
-	  //Place the string(character array) of the direction into const char* direction
-	  direction = document["direction"].GetString();  
+	  	//Place the string(character array) of the direction into const char* direction
+	 	 direction = document["direction"].GetString();  
 		std::string way(direction);
 		data->direction = way;
 		//accesses the decimal value for speed and assigns it to info.speed	
@@ -133,7 +131,7 @@ void process_json(OPS241A_radar::radar_data *data, std::string single_msg)
 	{
 		for (int i = 0; i < document["FFT"].Size(); i++)
 		{
-		  //FFT is an array of 1x2 array, each element represent a different channel. Either i or q.
+		  	//FFT is an array of 1x2 array, each element represent a different channel. Either i or q.
 			const Value& a = document["FFT"][i].GetArray();  
 			data->fft_data.i.push_back(a[0].GetFloat());
 			data->fft_data.q.push_back(a[1].GetFloat());
