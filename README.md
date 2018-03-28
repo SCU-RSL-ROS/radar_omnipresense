@@ -8,7 +8,7 @@ You will need to download and install:
 	[LinuxCommConnection](https://github.com/RyanLoringCooper/LinuxCommConnection)
 	
 ### Running the package with roslaunch
-To run the package you will need to ensure that you have two OPS short range radar devices plugged into your machine. Once this is done utilize the roslaunch comman in the terminal. To do so type the following command in your terminal. Note: This was developed on the Lunar release of ROS. We recommend installing the ROS Kinetic release or later. 
+To run the package you will need to ensure that you have two OPS short range radar devices plugged into your machine. Once this is done utilize the roslaunch comman in the terminal. To do so type the following command in your terminal. Note: This was developed on the Lunar release of ROS on a Linux machine. We recommend installing the ROS Kinetic release or later on a Linux machine. 
 ```
 roslaunch [pakcage_name] radar.launch
 ```	
