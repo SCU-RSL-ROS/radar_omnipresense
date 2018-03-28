@@ -36,49 +36,49 @@ bool fft_on;
 //service function to send api commands to radar device
 bool api(OPS241A_radar::SendAPICommand::Request &req, OPS241A_radar::SendAPICommand::Response &res) 
 {
-	res.response = "false";
-  	if (req.command == "Oj")
-  	{
-     		ROS_INFO("Cannot turn JSON mode off");
-     		return true;
-  	}
- 	else if (req.command == "OF")
-  	{ 
-  		fft_on = 1;
-  	}
-  	else if (req.command == "Of")
- 	{
-  		fft_on = 0;
-  	}
-  	//writes the api input to the serial port
-	con->write(std::string(req.command.c_str())); 
-	con->clearBuffer();
-	//output for user to see that correct input was sent to the radar
-	ROS_INFO("API command sent: %s", req.command.c_str()); 
-	con->waitForData();
-	con->waitForData();
-	std::string command_response = con->readString();
-	ROS_INFO("Command_response is: %s", command_response.c_str());
-	std::size_t found_open_brace = command_response.find("{");
-	std::size_t found_close_brace = command_response.find("}");
-	bool open_brace = found_open_brace == std::string::npos;
-	bool close_brace = found_close_brace == std::string::npos;
-	if ((open_brace) && (close_brace))
-	{
-		ROS_INFO("ERROR: Response not recieved");
-		return true;
-	}
-	std::string whole_msg = command_response.substr(found_open_brace,found_close_brace+1);
-	//default template parameter uses UTF8 and MemoryPoolAllocator. //creates a document DOM instant called doc
-	Document doc; 
-	//doc.Parse(msg.data.c_str()); //parsing the json string msg.data with format{"speed":#.##,"direction":"inbound(or outbound)","time":###,"tick":###}
- 	doc.Parse(whole_msg.c_str());
-	//case for when the radar outputs the JSON string {"OutputFeature":"@"}. This is not compatible with parsing into the message.
-	if (doc.HasMember("OutputFeature")) 
- 	{
- 		ROS_INFO("Recieved: %s", whole_msg.c_str());
- 		res.response = "true";
- 	}
+  res.response = "false";
+  if (req.command == "Oj")
+  {
+    ROS_INFO("Cannot turn JSON mode off");
+    return true;
+  }
+  else if (req.command == "OF")
+  { 
+    fft_on = 1;
+  }
+  else if (req.command == "Of")
+  {
+    fft_on = 0;
+  }
+  //writes the api input to the serial port
+  con->write(std::string(req.command.c_str())); 
+  con->clearBuffer();
+  //output for user to see that correct input was sent to the radar
+  ROS_INFO("API command sent: %s", req.command.c_str()); 
+  con->waitForData();
+  con->waitForData();
+  std::string command_response = con->readString();
+  ROS_INFO("Command_response is: %s", command_response.c_str());
+  std::size_t found_open_brace = command_response.find("{");
+  std::size_t found_close_brace = command_response.find("}");
+  bool open_brace = found_open_brace == std::string::npos;
+  bool close_brace = found_close_brace == std::string::npos;
+  if ((open_brace) && (close_brace))
+  {
+    ROS_INFO("ERROR: Response not recieved");
+    return true;
+  }
+  std::string whole_msg = command_response.substr(found_open_brace,found_close_brace+1);
+  //default template parameter uses UTF8 and MemoryPoolAllocator. //creates a document DOM instant called doc
+  Document doc; 
+  //doc.Parse(msg.data.c_str()); //parsing the json string msg.data with format{"speed":#.##,"direction":"inbound(or outbound)","time":###,"tick":###}
+  doc.Parse(whole_msg.c_str());
+  //case for when the radar outputs the JSON string {"OutputFeature":"@"}. This is not compatible with parsing into the message.
+  if (doc.HasMember("OutputFeature")) 
+  {
+    ROS_INFO("Recieved: %s", whole_msg.c_str());
+    res.response = "true";
+  }
   return true;
 }
 
@@ -87,8 +87,8 @@ bool api(OPS241A_radar::SendAPICommand::Request &req, OPS241A_radar::SendAPIComm
 
 void process_json(OPS241A_radar::radar_data *data, std::string single_msg)
 {
-	//default template parameter uses UTF8 and MemoryPoolAllocator. //creates a document DOM instant called document
-	Document document; 
+  //default template parameter uses UTF8 and MemoryPoolAllocator. //creates a document DOM instant called document
+  Document document; 
  	//document.Parse(msg.data->c_str()); //parsing the json string msg.data with format{"speed":#.##,"direction":"inbound (or outbound)","time":###,"tick":###}
  	document.Parse(single_msg.c_str());
  	assert(document.IsObject());
@@ -96,7 +96,7 @@ void process_json(OPS241A_radar::radar_data *data, std::string single_msg)
  	//case for when the radar outputs the JSON string {"OutputFeature":"@"}. This is not compatible with parsing into the ROS message.
  	if (document.HasMember("OutputFeature")) 
 	{
-		ROS_INFO("OutputFeature");
+    ROS_INFO("OutputFeature");
 		return;
 	}
 	
@@ -105,10 +105,10 @@ void process_json(OPS241A_radar::radar_data *data, std::string single_msg)
 	//fills in info.direction with a converted c++ string and only does so if direction is not empty.
 	if (dir)  
 	{
-	  	//define a constant character array(c language)
+    //define a constant character array(c language)
 		const char* direction; 
-	  	//Place the string(character array) of the direction into const char* direction
-	 	 direction = document["direction"].GetString();  
+	  //Place the string(character array) of the direction into const char* direction
+	 	direction = document["direction"].GetString();  
 		std::string way(direction);
 		data->direction = way;
 		//accesses the decimal value for speed and assigns it to info.speed	
@@ -129,9 +129,9 @@ void process_json(OPS241A_radar::radar_data *data, std::string single_msg)
 	//indexes and creates fft field for publishing.
 	else if (fft)
 	{
-		for (int i = 0; i < document["FFT"].Size(); i++)
+    for (int i = 0; i < document["FFT"].Size(); i++)
 		{
-		  	//FFT is an array of 1x2 array, each element represent a different channel. Either i or q.
+      //FFT is an array of 1x2 array, each element represent a different channel. Either i or q.
 			const Value& a = document["FFT"][i].GetArray();  
 			data->fft_data.i.push_back(a[0].GetFloat());
 			data->fft_data.q.push_back(a[1].GetFloat());
@@ -139,7 +139,7 @@ void process_json(OPS241A_radar::radar_data *data, std::string single_msg)
 	}
 	else 
 	{
-		ROS_INFO("ERROR: Unsupported message type.");
+    ROS_INFO("ERROR: Unsupported message type.");
 	}
 }
 //#########################################################################################################################################################//
@@ -147,16 +147,16 @@ void process_json(OPS241A_radar::radar_data *data, std::string single_msg)
 
 std::string getMessage(CommConnection *connection) 
 {
-	std::string msg;
+  std::string msg;
 	bool startFilling = false; 
 	while(true) 
 	{
 		if(connection->available()) 
 		{
-			char c = connection->read();
+      char c = connection->read();
 			if(c == '{') 
 			{
-				startFilling = true;
+        startFilling = true;
 			}
 			else if(c == '}' && startFilling) 
 			{
@@ -176,7 +176,7 @@ std::string getMessage(CommConnection *connection)
 
 int main(int argc, char** argv)
 {
-	//the name of this node: radar_publisher
+  //the name of this node: radar_publisher
   ros::init(argc, argv, "radar_publisher"); 
   ros::NodeHandle nh;//("~");
   
@@ -208,28 +208,26 @@ int main(int argc, char** argv)
   // contines the while loop as long as ros::ok continues to continue true
   while (ros::ok())
   {
-  	OPS241A_radar::radar_data info; 
-	OPS241A_radar::radar_data info_out;
+    OPS241A_radar::radar_data info; 
+    OPS241A_radar::radar_data info_out;
   	//creats an instant of the radar_data structure named info. format: 
-	//package_name::msg_file_name variable_instance_name; 	
+	  //package_name::msg_file_name variable_instance_name; 	
   	std::string msg = getMessage(&connection);
   	std::string msg_fft = getMessage(&connection);
-
- 	if (msg.empty())
-	{
+    if (msg.empty())
+    {
  		ros::spinOnce();
  		loop_rate.sleep();
 		radar_pub.publish(info_out);
  		continue;
- 	}
- 	process_json(&info, msg);
- 	process_json(&info, msg_fft);	
-	radar_pub.publish(info);
-	//becomes neccessary for subscriber callback functions
-	ros::spinOnce(); 
-	// forces loop to wait for the remaining loop time to finish before starting over
-	loop_rate.sleep();
+    }
+    process_json(&info, msg);
+    process_json(&info, msg_fft);	
+    radar_pub.publish(info);
+    //becomes neccessary for subscriber callback functions
+    ros::spinOnce(); 
+    // forces loop to wait for the remaining loop time to finish before starting over
+    loop_rate.sleep();
   }
-  
   return(0);
 }
