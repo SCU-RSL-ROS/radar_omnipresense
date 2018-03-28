@@ -1,7 +1,7 @@
 #include "ros/ros.h"
 #include "std_msgs/String.h"
-#include "OPS241A_radar/radar_data.h"
-#include "OPS241A_radar/SendAPICommand.h"
+#include "radar_omnipresense/radar_data.h"
+#include "radar_omnipresense/SendAPICommand.h"
 #include <errno.h>
 #include <fcntl.h>
 #include <iostream>
@@ -34,7 +34,7 @@ bool fft_on;
 //#########################################################################################################################################################//
 
 //service function to send api commands to radar device
-bool api(OPS241A_radar::SendAPICommand::Request &req, OPS241A_radar::SendAPICommand::Response &res) 
+bool api(radar_omnipresense::SendAPICommand::Request &req, radar_omnipresense::SendAPICommand::Response &res) 
 {
   res.response = "false";
   if (req.command == "Oj")
@@ -85,7 +85,7 @@ bool api(OPS241A_radar::SendAPICommand::Request &req, OPS241A_radar::SendAPIComm
 //#########################################################################################################################################################//
 //#########################################################################################################################################################//
 
-void process_json(OPS241A_radar::radar_data *data, std::string single_msg)
+void process_json(radar_omnipresense::radar_data *data, std::string single_msg)
 {
   //default template parameter uses UTF8 and MemoryPoolAllocator. //creates a document DOM instant called document
   Document document; 
@@ -186,8 +186,8 @@ int main(int argc, char** argv)
   //Open USB port serial connection for two way communication
   SerialConnection connection = SerialConnection(serialPort.c_str(), B19200, 0);  
   con = &connection;
-  //the node is created. node publishes to topic "radar" using OPS241A::radar_data messages and will buffer up to 1000 messages before beginning to throw 		away old ones. 																																								     		
-  ros::Publisher radar_pub = nh.advertise<OPS241A_radar::radar_data>("radar",1000); 
+  //the node is created. node publishes to topic "radar" using radar_omnipresense::radar_data messages and will buffer up to 1000 messages before beginning to throw 		away old ones. 																																								     		
+  ros::Publisher radar_pub = nh.advertise<radar_omnipresense::radar_data>("radar",1000); 
   //the service "send_api_commands" is created and advertised over ROS
   ros::ServiceServer radar_srv = nh.advertiseService("send_api_command", api);  
   //ROS loop rate, currently sent to 60Hz.
@@ -208,8 +208,8 @@ int main(int argc, char** argv)
   // contines the while loop as long as ros::ok continues to continue true
   while (ros::ok())
   {
-    OPS241A_radar::radar_data info; 
-    OPS241A_radar::radar_data info_out;
+    radar_omnipresense::radar_data info; 
+    radar_omnipresense::radar_data info_out;
   	//creats an instant of the radar_data structure named info. format: 
 	  //package_name::msg_file_name variable_instance_name; 	
   	std::string msg = getMessage(&connection);
