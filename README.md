@@ -20,7 +20,7 @@ Then in another terminal please type the following command to view the topic tha
 ```
 rostopic echo /radar_2/radar
 ```
-### Running one radar at a time and using ther service to activate FFT output. 		
+### Running one radar at a time and using the ROS service to activate FFT output. 		
 To enable the radar devices to publish FFT data, this can most easily be done by running one radar at a time (i.e. not utilizing the roslaunch method above). for this case ensure a radar device is plugged into your machine. Open a new terminal and type the following to start the radar node for one device.
 ```
 roscore
