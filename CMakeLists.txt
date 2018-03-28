@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(OPS241A_radar)
+project(radar_omnipresense)
 add_compile_options(-std=c++11)
 set(ROSCPP_USE_TCP_NODELAY)
 ## Compile as C++11, supported in ROS Kinetic and newer
@@ -111,7 +111,7 @@ catkin_package(
 set(LCC_LINK_FLAG "-lLinuxCommConnection")
 add_executable(radar_publisher src/radar_publisher.cpp)
 target_link_libraries(radar_publisher ${catkin_LIBRARIES} ${RAPIDJSONDIR} ${LCC_LINK_FLAG})
-add_dependencies(radar_publisher OPS241A_radar_generate_messages_cpp)
+add_dependencies(radar_publisher radar_omnipresense_generate_messages_cpp)
 
 ##add_executable(radar_subscriber src/radar_subscriber.cpp)
 ##target_link_libraries(radar_subscriber ${catkin_LIBRARIES})
