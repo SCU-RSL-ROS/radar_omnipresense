@@ -165,20 +165,6 @@ std::string getMessage(CommConnection *connection) {
 			}
 		}
 	}
-/*	int needToRead = connection->waitForDelimitor('{');    // Waits for data to be sent to the serial port.
-	//stores string retrieved from serial port into msg.
-	if(needToRead > 1) 
-	{
-		//ROS_INFO("need to read: %d",needToRead);
-		char * dirt;
-		connection->readUntil(&dirt, '{', needToRead);
-		//ROS_INFO("getting junk %s", dirt);
-		delete[] dirt;  
-	}
-	needToRead = connection->waitForDelimitor('}');
-	msg = connection->readString(needToRead);
-	//ROS_INFO("DERP %d strlen=%d", needToRead, msg.size());  
-	*/
 }
 
 //#########################################################################################################################################################//
@@ -205,24 +191,16 @@ int main(int argc, char** argv)
   //assuming radar is being started with no fft output.
   fft_on = 0;  
   connection.clearBuffer();
-  //Forces KeepReading to continously read data from the USB serial port "connection".Then begin reading. Then set radar device to output Json format  data
-  //string of format {"speed":#.##,"direction":"inbound(or outbound)","time":###,"tick":###}. Pause 100ms. Sets radar device to output FFT msg 
+  //Forces KeepReading to continously read data from the USB serial port "connection".
+  //Then begin reading. Then set radar device to output Json format  data
+  //string of format {"speed":#.##,"direction":"inbound(or outbound)","time":###,"tick":###}. 
+  //Pause 100ms. Sets radar device to output FFT msg 
   //{"FFT":[ [#.###, #.###],[#.###, #.###],............[#.###, #.###],[#.###, #.###] ]} pause 100ms
   bool KeepReading = true; 
   connection.begin();
-  connection.write("OJ"); 
-  //usleep(100000); 
+  connection.write("OJ");
   connection.write("Of"); 
-  //usleep(100000);
   connection.clearBuffer();
-  
-  //build_data array is used when an incomplete msg is recieved and stores that incomplete msg, builds it, and once complete
-  std::string build_data; 
-  bool out_ready = 0;
-  int num_processed = 0;
-  int expected_msgs;
-  //creats an instant of the radar_data structure named info. format: package_name::msg_file_name variable_instance_name;
-  
   // contines the while loop as long as ros::ok continues to continue true
   while (ros::ok()) 
   {
