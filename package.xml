@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>OPS241A_radar</name>
+  <name>radar_omnipresense</name>
   <version>0.0.0</version>
   <description>The radar_data package</description>
 
