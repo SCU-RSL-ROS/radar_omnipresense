@@ -234,7 +234,8 @@ int main(int argc, char** argv)
 		radar_pub.publish(info_out);
  		continue;
     }
-    process_json(&info, msg);	
+    process_json(&info, msg);
+    process_json(&info, msg_fft);
     radar_pub.publish(info);
     //becomes neccessary for subscriber callback functions
     ros::spinOnce(); 
