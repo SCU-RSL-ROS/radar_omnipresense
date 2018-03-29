@@ -38,11 +38,9 @@ the License.
 #include <LinuxCommConnection/CommConnection.h>
 #include <LinuxCommConnection/SerialConnection.h>
 #include "rapidjson/document.h"
-
 using namespace rapidjson;
 
 SerialConnection * con;
-bool fft_on;
 
 //#########################################################################################################################################################//
 //#########################################################################################################################################################//
@@ -55,14 +53,6 @@ bool api(radar_omnipresense::SendAPICommand::Request &req, radar_omnipresense::S
   {
     ROS_INFO("Cannot turn JSON mode off");
     return true;
-  }
-  else if (req.command == "OF")
-  { 
-    fft_on = 1;
-  }
-  else if (req.command == "Of")
-  {
-    fft_on = 0;
   }
   //writes the api input to the serial port
   con->write(std::string(req.command.c_str())); 
@@ -207,7 +197,6 @@ int main(int argc, char** argv)
   //ROS loop rate, currently sent to 60Hz.
   ros::Rate loop_rate(1000); 
   //assuming radar is being started with no fft output.
-  fft_on = 0;  
   connection.clearBuffer();
   //Forces KeepReading to continously read data from the USB serial port "connection".
   //Then begin reading. Then set radar device to output Json format  data
