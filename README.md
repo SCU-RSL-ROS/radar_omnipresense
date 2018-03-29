@@ -4,10 +4,9 @@ Robotic Operating System (ROS) publisher and service for the OmniPreSense short 
 You will need to download and install:
 
 
-[rapidJson]( https://github.com/Tencent/rapidjson)
-
+*[rapidJson]( https://github.com/Tencent/rapidjson)
 	
-[LinuxCommConnection](https://github.com/RyanLoringCooper/LinuxCommConnection)
+*[LinuxCommConnection](https://github.com/RyanLoringCooper/LinuxCommConnection)
 
 	
 ### Running the package with roslaunch
