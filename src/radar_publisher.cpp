@@ -90,7 +90,7 @@ bool api(radar_omnipresense::SendAPICommand::Request &req, radar_omnipresense::S
 //#########################################################################################################################################################//
 //#########################################################################################################################################################//
 
-void process_json(radar_omnipresense::radar_data *data, std::string single_msg)
+void process_json(radar_omnipresense::radar_data *data, std::string single_msg, std::string serialPort)
 {
   //default template parameter uses UTF8 and MemoryPoolAllocator. //creates a document DOM instant called document
   Document document; 
@@ -124,7 +124,7 @@ void process_json(radar_omnipresense::radar_data *data, std::string single_msg)
 		//accesses the numerical value for tick and assigns it to info.tick
 		data->tick = document["tick"].GetInt();	
 		//place holder for field sensorid
-		data->sensorid = "to be determined"; 
+		data->sensorid = serialPort; 
 		//place holder for field range for field that will be added soon
 		data->range = 0;
 		//place holder for field that will be added soon
@@ -257,7 +257,7 @@ int main(int argc, char** argv)
 				ROS_INFO("In the one msg is empty condition");
 				if (msg_one.empty())
 				{
-			      process_json(&info, msg_two);
+			      process_json(&info, msg_two, serialPort);
 			      radar_pub.publish(info);
 						//becomes neccessary for subscriber callback functions
 						ros::spinOnce();  
@@ -266,7 +266,7 @@ int main(int argc, char** argv)
 				}
 				else
 				{
-			      process_json(&info, msg_one);
+			      process_json(&info, msg_one, serialPort);
 			      radar_pub.publish(info);
 						//becomes neccessary for subscriber callback functions
 						ros::spinOnce();  
@@ -276,10 +276,10 @@ int main(int argc, char** argv)
 			}
 			else //(!(msg_one.empty()) && !(msg_two.empty()))
 			{
-				process_json(&info, msg_one);
+				process_json(&info, msg_one, serialPort);
 				ROS_INFO("info.tick after msg_one is added: %d",info.tick);
 				ROS_INFO("info.speed after msg_one is added: %f",info.speed);
-				process_json(&info, msg_two);
+				process_json(&info, msg_two, serialPort);
 				ROS_INFO("info.tick after msg_two is added: %d",info.tick);
 				ROS_INFO("info.speed after msg_two is added: %f",info.speed);
 				radar_pub.publish(info);
