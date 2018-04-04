@@ -13,6 +13,7 @@ the License.
 */
 
 #include "ros/ros.h"
+#include "std_msgs/Header.h"
 #include "std_msgs/String.h"
 #include "radar_omnipresense/radar_data.h"
 #include "radar_omnipresense/SendAPICommand.h"
@@ -130,6 +131,7 @@ void process_json(radar_omnipresense::radar_data *data, std::string single_msg)
 		//info.angle = 0;
 		//place holder for field
 		data->objnum = 1;
+		data->metadata.stamp = ros::Time::now(); 
 	}
 	//indexes and creates fft field for publishing.
 	else if (fft)
@@ -290,6 +292,7 @@ int main(int argc, char** argv)
 		else if (connected == 0)
 		{
 			ROS_INFO("Not Connected");
+			connection.begin();
 			count = 0;
 			ros::spinOnce();
 			loop_rate.sleep();
