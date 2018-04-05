@@ -8,4 +8,4 @@
 			 <node pkg = "radar_omnipresense" type= "radar_publisher" name= "radar_2_data_and_services"/>
 			        <param name="serialPort" value="/dev/ttyACM1"/>
 			 </group>
- </launch>
+</launch>

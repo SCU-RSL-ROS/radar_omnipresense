@@ -1,4 +1,4 @@
 <launch>
-			 <node pkg = "radar_omnipresense" type= "radar_publisher" name= "radar_1_data_and_services"/>
+			 <node pkg = "radar_omnipresense" type= "radar_publisher" name= "radar_data_and_services"/>
 			        <param name="serialPort" value="/dev/ttyACM0"/>
- </launch>
+</launch>

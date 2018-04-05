@@ -203,7 +203,7 @@ int main(int argc, char** argv)
   // sets serialPort to "serialPort". "serialPort" is defined in package launch file. "/dev/ttyACM0" is the default value if launch does not set 			  		"serialPort" or launch is not used.
   nh.param<std::string>("serialPort", serialPort,"/dev/ttyACM0");
   //the node is created. node publishes to topic "radar" using radar_omnipresense::radar_data messages and will buffer up to 1000 messages before beginning to throw 		away old ones. 																																								     		
-  ros::Publisher radar_pub = nh.advertise<radar_omnipresense::radar_data>("radar",1000); 
+  ros::Publisher radar_pub = nh.advertise<radar_omnipresense::radar_data>("radar_report",1000); 
   //the service "send_api_commands" is created and advertised over ROS
   ros::ServiceServer radar_srv = nh.advertiseService("send_api_command", api);  
   //ROS loop rate, currently sent to 60Hz.

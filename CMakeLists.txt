@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(radar_omnipresense)
+## Compile as C++11, supported in ROS Kinetic and newer
 add_compile_options(-std=c++11)
 set(ROSCPP_USE_TCP_NODELAY)
-## Compile as C++11, supported in ROS Kinetic and newer
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -103,7 +103,6 @@ find_package(rapidjson REQUIRED)
 ## LIBRARIES: libraries you create in this project that dependent projects also need
 catkin_package(
 #  INCLUDE_DIRS include
-#  LIBRARIES radar_data
   CATKIN_DEPENDS roscpp rospy std_msgs message_generation
 #  DEPENDS system_lib
 )
@@ -112,12 +111,6 @@ set(LCC_LINK_FLAG "-lLinuxCommConnection")
 add_executable(radar_publisher src/radar_publisher.cpp)
 target_link_libraries(radar_publisher ${catkin_LIBRARIES} ${RAPIDJSONDIR} ${LCC_LINK_FLAG})
 add_dependencies(radar_publisher radar_omnipresense_generate_messages_cpp)
-
-##add_executable(radar_subscriber src/radar_subscriber.cpp)
-##target_link_libraries(radar_subscriber ${catkin_LIBRARIES})
-##add_dependencies(radar_subscriber OPS241A_radar_generate_messages_cpp)
-
-
 
 ###########
 ## Build ##
@@ -130,18 +123,6 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
   ${RAPIDJSON_INCLUDE_DIRS}
 )
-
-
-
-## Declare a C++ library
-# add_library(${radar_data}
-#   ./src/radar_data/src/LinuxCommConnection/src/SerialConnection.h
-#   ./src/radar_data/src/LinuxCommConnection/src/NetworkConnection.h
-#   ./src/radar_data/src/LinuxCommConnection/src/CommConnection.h
-#   src/${radar_data}/CommConnection.cpp
-#   src/${radar_data}/NetworkConnection.cpp
-# )
-
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
 ## either from message generation or dynamic reconfigure
