@@ -33,11 +33,11 @@ Note: roslaunch stays running.  You will need to have another shell open to ente
 
 To view these topics please type the following command into a terminal.
 ```	
-rostopic echo /radar_1/radar
+rostopic echo /radar_1/radar_report
 ```	
 Then, if running a second radar module, in another terminal please type the following command to view the topic that the second radar is publishing to.
 ```
-rostopic echo /radar_2/radar
+rostopic echo /radar_2/radar_report
 ```
 
 Note: If you only have one radar device but use the multi_radar.launch file, the roslaunch command will still work, but you will see "error 2 opening /dev/ttyACM#", and # will be the port the device is connected to. The one radar will still publish data to the topic and the associated service can still be used.
