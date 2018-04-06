@@ -1,6 +1,6 @@
 /*Copyright 2018 Santa Clara University Robotic Systems Lab 
 Licensed under the Educational Community License, Version 2.0 (the "License"); 
-you may not use this fileexcept in compliance with the License. 
+you may not use this file except in compliance with the License. 
 You may obtain a copy of the License at
 
 http://opensource.org/licenses/ECL-2.0

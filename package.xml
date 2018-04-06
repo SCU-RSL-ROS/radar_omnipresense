@@ -2,31 +2,30 @@
 <package format="2">
   <name>radar_omnipresense</name>
   <version>0.0.0</version>
-  <description>The radar_data package</description>
+  <description>This is the radar driver package developed for the omnipresense radar module.</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag -->
   <!-- Example:  -->
   <!-- <maintainer email="jane.doe@example.com">Jane Doe</maintainer> -->
-  <maintainer email="garren@todo.todo">garren</maintainer>
+  <maintainer email="ghendricks@scu.edu">Garren Hendricks</maintainer>
 
 
   <!-- One license tag required, multiple allowed, one license per tag -->
   <!-- Commonly used license strings: -->
   <!--   BSD, MIT, Boost Software License, GPLv2, GPLv3, LGPLv2.1, LGPLv3 -->
-  <license>TODO</license>
+  <license>ECL2.0</license>
 
 
   <!-- Url tags are optional, but multiple are allowed, one per tag -->
   <!-- Optional attribute type can be: website, bugtracker, or repository -->
-  <!-- Example: -->
-  <!-- <url type="website"> <url>http://www.ros.org/wiki/radar_omnipresense</url>> -->
-
+  <url type="website"> http://www.ros.org/wiki/radar_omnipresense</url>
+  <url type="website"> https://github.com/SCU-RSL-ROS/radar_omnipresense</url>
 
   <!-- Author tags are optional, multiple are allowed, one per tag -->
   <!-- Authors do not have to be maintainers, but could be -->
-  <!-- Example: -->
-  <!-- <author email="jane.doe@example.com">Jane Doe</author> -->
-
+  <author email="ghendricks@scu.edu">Garren Hendricks</author> 
+  <author email="mcondino@scu.edu">Matthew Condino</author> 
+  <author email="rcooper@scu.edu">Ryan Cooper</author> 
 
   <!-- The *depend tags are used to specify dependencies -->
   <!-- Dependencies can be catkin packages or system dependencies -->
