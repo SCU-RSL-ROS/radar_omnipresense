@@ -2,8 +2,8 @@
 Changelog for package radar_omnipresense
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.0.1 (2018-04-07)
+------------------
 * Merge branch 'master' of https://github.com/SCU-RSL-ROS/radar_omnipresense
 * added info to package.xml
 * added url to package.xml
