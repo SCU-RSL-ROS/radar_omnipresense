@@ -32,6 +32,10 @@ This will run the package on the topics as declared in the .launch file you spec
 Note: roslaunch stays running.  You will need to have another shell open to enter other commands while the radar_omnipresense node is running.  The unix utility "screen" is a very valuable utility if you are accessing the ROS linux instance over ssh, or more generally do not have the ability to have multiple terminals.
 
 To view these topics please type the following command into a terminal.
+```
+rostopic echo /radar_report
+```
+The above comman will for if you are specifically using the single_radar.launch file. If you are using the multi_radar. launch file, use the following commands. 
 ```	
 rostopic echo /radar_1/radar_report
 ```	
