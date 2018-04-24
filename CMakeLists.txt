@@ -16,7 +16,7 @@ find_package(catkin REQUIRED COMPONENTS
 
 ## System dependencies are found with CMake's conventions
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR})
-find_package(rapidjson REQUIRED)
+find_package(RapidJSON REQUIRED)
 
 
 ## Uncomment this if the package has a setup.py. This macro ensures
@@ -105,7 +105,7 @@ find_package(rapidjson REQUIRED)
 catkin_package(
 #  INCLUDE_DIRS include
   CATKIN_DEPENDS roscpp rospy std_msgs message_generation
-#  DEPENDS system_lib
+  DEPENDS RapidJSON
 )
 
 set(LCC_LINK_FLAG "-lLinuxCommConnection")
