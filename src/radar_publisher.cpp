@@ -36,13 +36,17 @@ the License.
 #include <sstream> 
 #include <string>
 #include <thread>
+#include <vector>
 #include <LinuxCommConnection/CommConnection.h>
 #include <LinuxCommConnection/SerialConnection.h>
 #include "rapidjson/document.h"
 using namespace rapidjson;
 
 SerialConnection * con;
-
+bool OF = false;
+bool OJ = false;
+bool ORI = false;
+bool ORQ = false;
 /*!
 * \service function to send api commands to radar device
 *
@@ -87,6 +91,16 @@ bool api(radar_omnipresense::SendAPICommand::Request &req, radar_omnipresense::S
     ROS_INFO("Recieved: %s", whole_msg.c_str());
     res.response = "true";
   }
+  OJ = true;
+  if (req.command == "OF")
+  {
+  	OF = true;
+  }
+  if (req.command == "OR")
+  {
+  	ORI = true;
+  	ORQ = true;
+  }
   return true;
 }
 /*!
@@ -96,64 +110,112 @@ bool api(radar_omnipresense::SendAPICommand::Request &req, radar_omnipresense::S
 * This function takes in the output of std::string getMessage(CommConnection *connection) along with the  memory location of the package's custom message * * structure and the serialPort and it uses the rapidJSON parser to populate the members of the package's custom message structure. 
 *
 */
-void process_json(radar_omnipresense::radar_data *data, std::string single_msg, std::string serialPort)
+void process_json(radar_omnipresense::radar_data *data, std::vector<std::string> msgs, std::string serialPort)
 {
-  //default template parameter uses UTF8 and MemoryPoolAllocator. //creates a document DOM instant called document
-  Document document; 
- 	//document.Parse(msg.data->c_str()); //parsing the json string msg.data with format{"speed":#.##,"direction":"inbound (or outbound)","time":###,"tick":###}
- 	document.Parse(single_msg.c_str());
- 	ROS_INFO("Msg passed to parser is %s", single_msg.c_str());
- 	assert(document.IsObject());
- 	//ROS_INFO("Passed assertion");
- 	//case for when the radar outputs the JSON string {"OutputFeature":"@"}. This is not compatible with parsing into the ROS message.
- 	if (document.HasMember("OutputFeature")) 
+	for(int i = 0; i < msgs.size(); i++)
 	{
-    ROS_INFO("OutputFeature");
-		return;
-	}
-	
-	bool fft = document.HasMember("FFT");
-	bool dir = document.HasMember("direction");
-	//fills in info.direction with a converted c++ string and only does so if direction is not empty.
-	if (dir)  
-	{
-    //define a constant character array(c language)
-		const char* direction; 
-	  //Place the string(character array) of the direction into const char* direction
-	 	direction = document["direction"].GetString();  
-		std::string way(direction);
-		data->direction = way;
-		//accesses the decimal value for speed and assigns it to info.speed	
-		data->speed = document["speed"].GetFloat();   
-		//accesses the numerical value for time and assigns it to info.time
-		data->time = document["time"].GetInt(); 
-		//accesses the numerical value for tick and assigns it to info.tick
-		data->tick = document["tick"].GetInt();	
-		//place holder for field sensorid
-		data->sensorid = serialPort; 
-		//place holder for field range for field that will be added soon
-		data->range = 0;
-		//place holder for field that will be added soon
-		//info.angle = 0;
-		//place holder for field
-		data->objnum = 1;
-		data->metadata.stamp = ros::Time::now(); 
-	}
-	//indexes and creates fft field for publishing.
-	else if (fft)
-	{
-    for (int i = 0; i < document["FFT"].Size(); i++)
+	  //TODO parser does not accept empty msgs or the {"unknown-command":"n"} type of command. Need to handle this case so that the code can move on to the next msg.
+		std::string single_msg = msgs[i];
+		if (single_msg.empty())
 		{
-      //FFT is an array of 1x2 array, each element represent a different channel. Either i or q.
-			const Value& a = document["FFT"][i].GetArray();  
-			data->fft_data.i.push_back(a[0].GetFloat());
-			data->fft_data.q.push_back(a[1].GetFloat());
- 		}	
+			continue;
+		}
+		//default template parameter uses UTF8 and MemoryPoolAllocator. //creates a document DOM instant called document
+		Document document; 
+	 	//document.Parse(msg.data->c_str()); //parsing the json string msg.data with format{"speed":#.##,"direction":"inbound (or outbound)","time":###,"tick":###}
+	 	document.Parse(single_msg.c_str());
+	 	assert(document.IsObject());
+	 	//ROS_INFO("Passed assertion");
+	 	//case for when the radar outputs the JSON string {"OutputFeature":"@"}. This is not compatible with parsing into the ROS message.
+	 	if (document.HasMember("OutputFeature")) 
+		{
+		  ROS_INFO("OutputFeature");
+			return;
+		}
+	
+		bool fft = document.HasMember("FFT");
+		bool dir = document.HasMember("direction");
+		bool raw_I = document.HasMember("I");
+		bool raw_Q = document.HasMember("Q");
+		//fills in info.direction with a converted c++ string and only does so if direction is not empty.
+		if (dir)  
+		{
+		  //define a constant character array(c language)
+			const char* direction; 
+			//Place the string(character array) of the direction into const char* direction
+		 	direction = document["direction"].GetString();  
+			std::string way(direction);
+			data->direction = way;
+			//accesses the decimal value for speed and assigns it to info.speed	
+			data->speed = document["speed"].GetFloat();   
+			//accesses the numerical value for time and assigns it to info.time
+			data->time = document["time"].GetInt(); 
+			//accesses the numerical value for tick and assigns it to info.tick
+			data->tick = document["tick"].GetInt();	
+			//place holder for field sensorid
+			data->sensorid = serialPort; 
+			//place holder for field range for field that will be added soon
+			data->range = 0;
+			//place holder for field that will be added soon
+			//info.angle = 0;
+			//place holder for field
+			data->objnum = 1;
+			data->metadata.stamp = ros::Time::now(); 
+		}
+		//indexes and creates fft field for publishing.
+		else if (fft)
+		{
+		  for (int i = 0; i < document["FFT"].Size(); i++)
+			{
+		    //FFT is an array of 1x2 array, each element represent a different channel. Either i or q.
+				const Value& a = document["FFT"][i].GetArray();  
+				data->fft_data.i.push_back(a[0].GetFloat());
+				data->fft_data.q.push_back(a[1].GetFloat());
+	 		}	
+		}
+		else if (raw_I || raw_Q)
+		{
+		  if (raw_I)
+		  {
+				for (int i = 0; i < document["I"].Size(); i++)
+				{
+				  const Value& b = document["I"];
+					data->raw_data.i.push_back(b[i].GetInt());  
+		 		}
+	 		}
+	 		if (raw_Q)
+	 		{
+	 			for (int i = 0; i < document["Q"].Size(); i++)
+				{
+					const Value& c = document["Q"];
+				  data->raw_data.q.push_back(c[i].GetInt());
+				}
+			}
+	  }
+		else 
+		{
+		  ROS_INFO("Unsupported message type");
+		}
 	}
-	else 
-	{
-    ROS_INFO("Unsupported message type");
-	}
+}
+
+/*!
+* \this function builds 
+*
+* This function
+*/
+int get_msgs_filled() 
+{
+			bool msgs_filled[] = {OJ, OF, ORI, ORQ};
+			int ret_val = 0;
+			for (int k = 0; k < 4; k++)
+			{
+				if (msgs_filled[k])
+				{
+					ret_val++;
+				}
+			}
+			return ret_val;
 }
 /*!
 * \this function builds a message bit by bit from the serial port and checks to make sure it is an 
@@ -162,44 +224,55 @@ void process_json(radar_omnipresense::radar_data *data, std::string single_msg, 
 * This function utilizes the LinuxCommConnection library to build a message that is of complete JSON message formate. If the message does not find    *	'direction' or 'FFT' within the JSON message it outputs an empty message since the message is not useful. If more than one message was sent and they were * not whole JSON messages the function returns an empty string.
 *
 */
-std::string getMessage(CommConnection *connection) 
+std::vector<std::string> getMessage(CommConnection *connection) 
 {
   std::string msg;
-	bool startFilling = false; 
-	while(true) 
+  std::vector<std::string> msg_vec;
+  bool startFilling = false;
+	int num_expected_msgs = get_msgs_filled(); 
+	for (int i = 0; i < num_expected_msgs; i++) 
 	{
-		if(connection->available()) 
+		msg = std::string();
+		bool startFilling = false;
+		bool check = false;
+		while(true)
 		{
-      char c = connection->read();
-			if(c == '{') 
+			if(connection->available()) 
 			{
-				if (startFilling)
+		    char c = connection->read();
+				if(c == '{') 
 				{
-					return std::string();
+					if (startFilling)
+					{
+						msg = std::string();
+						check = true;
+						//return std::string();
+					}
+		      startFilling = true;
 				}
-        startFilling = true;
-			}
-			else if(c == '}' && startFilling) 
-			{
-				msg += c;
-				break;
-			}
-			if(startFilling)
-			{
-				msg += c;
+				else if(c == '}' && startFilling) 
+				{
+					msg += c;
+					break;
+				}
+				if(!(check) && startFilling)
+				{
+					msg += c;
+				}
 			}
 		}
-	}
-	if (msg.find("direction") == std::string::npos && msg.find("FFT") == std::string::npos)
-	{
-			return std::string();
-	}
-	else
-	{
-		return msg;
-	}
+	  if (msg.find("direction") == std::string::npos && msg.find("FFT") == std::string::npos && msg.find("I") == std::string::npos && msg.find("Q") ==   			std::string::npos && msg.find("OutputFeature") == std::string::npos)
+		{ 
+			msg = std::string();
+			msg_vec.push_back(msg); 
+		}
+		else
+		{
+			msg_vec.push_back(msg);
+    }
+  }
+	return msg_vec;
 }
-
 //#########################################################################################################################################################//
 //#########################################################################################################################################################//
 
@@ -240,7 +313,10 @@ int main(int argc, char** argv)
 				bool KeepReading = true; 
 				connection.begin();
 				connection.write("OJ");
-				connection.write("Of"); 
+				OJ = true;
+				connection.write("Of");
+				connection.write("Or");
+				connection.write("F2");
 				connection.clearBuffer();
 			}
 			ROS_INFO("Connected");
@@ -248,47 +324,22 @@ int main(int argc, char** argv)
 			radar_omnipresense::radar_data info_out;
 			//creats an instant of the radar_data structure named info. format: 
 			//package_name::msg_file_name variable_instance_name; 	
-			std::string msg_one = getMessage(&connection);
-			std::string msg_two = getMessage(&connection);
-			if (msg_one.empty() && msg_two.empty())
-			{
-				ros::spinOnce();
-				loop_rate.sleep();
-				radar_pub.publish(info_out);
-				++count;
-				continue;
-			}
-			else if (msg_one.empty() && !(msg_two.empty()) || !(msg_one.empty()) && msg_two.empty())
-			{
-				if (msg_one.empty())
-				{
-			      process_json(&info, msg_two, serialPort);
-			      radar_pub.publish(info);
-						//becomes neccessary for subscriber callback functions
-						ros::spinOnce();  
-						// forces loop to wait for the remaining loop time to finish before starting over
-						loop_rate.sleep();
-				}
-				else
-				{
-			      process_json(&info, msg_one, serialPort);
-			      radar_pub.publish(info);
-						//becomes neccessary for subscriber callback functions
-						ros::spinOnce();  
-						// forces loop to wait for the remaining loop time to finish before starting over
-						loop_rate.sleep();
-				}
-			}
-			else //(!(msg_one.empty()) && !(msg_two.empty()))
-			{
-				process_json(&info, msg_one, serialPort);
-				process_json(&info, msg_two, serialPort);
+			std::vector<std::string> msgs = getMessage(&connection);
+			//bool msg_one_empty = msg_one.empty(); TODO: determine if a generalized vector version of this is needed.
+			//if (//TODO: determine under what conditions this portion needs to execute if at all.)
+			//{
+				//ros::spinOnce();
+				//loop_rate.sleep();
+				//radar_pub.publish(info_out);
+				//++count;
+				//continue;
+			//}
+				process_json(&info, msgs, serialPort);
 				radar_pub.publish(info);
 				//becomes neccessary for subscriber callback functions
 				ros::spinOnce();  
 				// forces loop to wait for the remaining loop time to finish before starting over
 				loop_rate.sleep();
-			}
 		}
 		else if (connected == 0)
 		{

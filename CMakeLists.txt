@@ -53,6 +53,7 @@ find_package(rapidjson REQUIRED)
    FILES
    radar_data.msg
    fft.msg
+   raw.msg
  )
 
 ## Generate services in the 'srv' folder
