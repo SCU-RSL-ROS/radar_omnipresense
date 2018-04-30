@@ -108,9 +108,13 @@ catkin_package(
   DEPENDS RapidJSON
 )
 
-set(LCC_LINK_FLAG "-lLinuxCommConnection")
-add_executable(radar_publisher src/radar_publisher.cpp)
-target_link_libraries(radar_publisher ${catkin_LIBRARIES} ${RAPIDJSONDIR} ${LCC_LINK_FLAG})
+include_directories(${PROJECT_SOURCE_DIR}/lib)
+add_subdirectory(${PROJECT_SOURCE_DIR}/lib)
+
+
+
+add_executable(radar_publisher src/radar_publisher.cpp lib/SerialConnection.cpp)
+target_link_libraries(radar_publisher ${catkin_LIBRARIES} ${RAPIDJSONDIR})
 add_dependencies(radar_publisher radar_omnipresense_generate_messages_cpp)
 
 ###########

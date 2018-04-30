@@ -37,8 +37,7 @@ the License.
 #include <string>
 #include <thread>
 #include <vector>
-#include <LinuxCommConnection/CommConnection.h>
-#include <LinuxCommConnection/SerialConnection.h>
+#include "../lib/SerialConnection.h"
 #include "rapidjson/document.h"
 using namespace rapidjson;
 
@@ -224,7 +223,7 @@ int get_msgs_filled()
 * This function utilizes the LinuxCommConnection library to build a message that is of complete JSON message formate. If the message does not find    *  'direction' or 'FFT' within the JSON message it outputs an empty message since the message is not useful. If more than one message was sent and they were * not whole JSON messages the function returns an empty string.
 *
 */
-std::vector<std::string> getMessage(CommConnection *connection) 
+std::vector<std::string> getMessage(SerialConnection *connection) 
 {
   std::string msg;
   std::vector<std::string> msg_vec;
