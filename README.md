@@ -4,8 +4,6 @@ A Robotic Operating System (ROS) publisher and service for the OmniPreSense shor
 ### Package Dependencies
  You will need to download and install:
 * [rapidJson]( https://github.com/Tencent/rapidjson)
- 	
-* [LinuxCommConnection](https://github.com/RyanLoringCooper/LinuxCommConnection)
 
 in order to successfully build the package with the ROS development tools.
 
