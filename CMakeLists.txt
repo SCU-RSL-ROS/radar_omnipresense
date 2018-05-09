@@ -17,6 +17,7 @@ find_package(catkin REQUIRED COMPONENTS
 ## System dependencies are found with CMake's conventions
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR})
 find_package(RapidJSON REQUIRED)
+#find_package(rapidjson-dev REQUIRED)
 
 
 ## Uncomment this if the package has a setup.py. This macro ensures
@@ -114,7 +115,7 @@ add_subdirectory(${PROJECT_SOURCE_DIR}/lib)
 
 
 add_executable(radar_publisher src/radar_publisher.cpp lib/SerialConnection.cpp)
-target_link_libraries(radar_publisher ${catkin_LIBRARIES} ${RAPIDJSONDIR})
+target_link_libraries(radar_publisher ${catkin_LIBRARIES})
 add_dependencies(radar_publisher radar_omnipresense_generate_messages_cpp)
 
 ###########
@@ -126,7 +127,7 @@ add_dependencies(radar_publisher radar_omnipresense_generate_messages_cpp)
 include_directories(
 # include
   ${catkin_INCLUDE_DIRS}
-  ${RAPIDJSON_INCLUDE_DIRS}
+ # ${RAPIDJSON_INCLUDE_DIRS}
 )
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
