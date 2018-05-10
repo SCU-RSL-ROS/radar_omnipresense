@@ -42,10 +42,10 @@ the License.
 using namespace rapidjson;
 
 SerialConnection * con;
-bool OF = false;
+//bool OF = false;
 bool OJ = false;
-bool ORI = false;
-bool ORQ = false;
+//bool ORI = false;
+//bool ORQ = false;
 /*!
 * \service function to send api commands to radar device
 *
@@ -91,6 +91,7 @@ bool api(radar_omnipresense::SendAPICommand::Request &req, radar_omnipresense::S
     res.response = "true";
   }
   OJ = true;
+/*
   if (req.command == "OF")
   {
     OF = true;
@@ -100,6 +101,7 @@ bool api(radar_omnipresense::SendAPICommand::Request &req, radar_omnipresense::S
     ORI = true;
     ORQ = true;
   }
+*/
   return true;
 }
 /*!
@@ -119,20 +121,18 @@ void process_json(radar_omnipresense::radar_data *data, std::vector<std::string>
     {
       continue;
     }
-    //default template parameter uses UTF8 and MemoryPoolAllocator. //creates a document DOM instant called document
-    Document document; 
-     //document.Parse(msg.data->c_str()); //parsing the json string msg.data with format{"speed":#.##,"direction":"inbound (or outbound)","time":###,"tick":###}
-     document.Parse(single_msg.c_str());
-     assert(document.IsObject());
-     //ROS_INFO("Passed assertion");
-     //case for when the radar outputs the JSON string {"OutputFeature":"@"}. This is not compatible with parsing into the ROS message.
-     if (document.HasMember("OutputFeature")) 
+    //document.Parse(msg.data->c_str()); //parsing the json string msg.data with format{"speed":#.##,"direction":"inbound (or 		outbound)","time":###,"tick":###}
+    document.Parse(single_msg.c_str());
+    assert(document.IsObject());
+    //ROS_INFO("Passed assertion");
+    //case for when the radar outputs the JSON string {"OutputFeature":"@"}. This is not compatible with parsing into the ROS message.
+   if (document.HasMember("OutputFeature")) 
     {
       ROS_INFO("OutputFeature");
       return;
     }
   
-    bool fft = document.HasMember("FFT");
+    //bool fft = document.HasMember("FFT");
     bool dir = document.HasMember("direction");
     bool raw_I = document.HasMember("I");
     bool raw_Q = document.HasMember("Q");
@@ -146,7 +146,8 @@ void process_json(radar_omnipresense::radar_data *data, std::vector<std::string>
       std::string way(direction);
       data->direction = way;
       //accesses the decimal value for speed and assigns it to info.speed  
-      data->speed = document["speed"].GetFloat();   
+      const char* number = document["speed"].GetString();   
+      data->speed = atof(number);   
       //accesses the numerical value for time and assigns it to info.time
       data->time = document["time"].GetInt(); 
       //accesses the numerical value for tick and assigns it to info.tick
@@ -161,6 +162,7 @@ void process_json(radar_omnipresense::radar_data *data, std::vector<std::string>
       data->objnum = 1;
       data->metadata.stamp = ros::Time::now(); 
     }
+    /*
     //indexes and creates fft field for publishing.
     else if (fft)
     {
@@ -191,6 +193,7 @@ void process_json(radar_omnipresense::radar_data *data, std::vector<std::string>
         }
       }
     }
+    */
     else 
     {
       ROS_INFO("Unsupported message type");
@@ -205,7 +208,7 @@ void process_json(radar_omnipresense::radar_data *data, std::vector<std::string>
 */
 int get_msgs_filled() 
 {
-      bool msgs_filled[] = {OJ, OF, ORI, ORQ};
+      bool msgs_filled[] = {OJ/*, OF, ORI, ORQ*/};
       int ret_val = 0;
       for (int k = 0; k < 4; k++)
       {
