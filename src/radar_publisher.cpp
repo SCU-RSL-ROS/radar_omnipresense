@@ -121,6 +121,7 @@ void process_json(radar_omnipresense::radar_data *data, std::vector<std::string>
     {
       continue;
     }
+    Document document;
     //document.Parse(msg.data->c_str()); //parsing the json string msg.data with format{"speed":#.##,"direction":"inbound (or 		outbound)","time":###,"tick":###}
     document.Parse(single_msg.c_str());
     assert(document.IsObject());
