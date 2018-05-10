@@ -17,7 +17,7 @@ find_package(catkin REQUIRED COMPONENTS
 ## System dependencies are found with CMake's conventions
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR})
 find_package(RapidJSON REQUIRED)
-#find_package(rapidjson-dev REQUIRED)
+#find_package(rapidjson-dev REQUIRED),
 
 
 ## Uncomment this if the package has a setup.py. This macro ensures
