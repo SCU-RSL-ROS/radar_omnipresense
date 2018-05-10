@@ -19,8 +19,8 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR})
 find_package(RapidJSON REQUIRED)
 #ok, so, the FindRapidJSON.cmake file will have set RAPIDJ.. but here cmake thinks it's
 #going to be RapidJ and warn us.  Hack FindRapidJSON to set both and quell the warning
-include_directories("${RAPIDJSON_INCLUDE_DIRS}")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${RAPIDJSON_CXX_FLAGS}")
+#include_directories("${RAPIDJSON_INCLUDE_DIRS}")
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${RAPIDJSON_CXX_FLAGS}")
 
 
 ## Uncomment this if the package has a setup.py. This macro ensures
