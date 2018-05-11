@@ -17,7 +17,9 @@ find_package(catkin REQUIRED COMPONENTS
 ## System dependencies are found with CMake's conventions
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR})
 find_package(RapidJSON REQUIRED)
-#find_package(rapidjson-dev REQUIRED),
+#find_package(rapidjson-dev REQUIRED)
+include_directories("${RapidJSON_INCLUDE_DIRS}")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${RAPIDJSON_CXX_FLAGS}")
 
 
 ## Uncomment this if the package has a setup.py. This macro ensures
@@ -195,9 +197,11 @@ include_directories(
 #############
 
 ## Add gtest based cpp test target and link libraries
-catkin_add_gtest(${PROJECT_NAME}-test src/test/utest.cpp)
-if(TARGET ${PROJECT_NAME}-test)
-  target_link_libraries(${PROJECT_NAME}-test)
+if(CATKIN_ENABLE_TESTING)
+		catkin_add_gtest(${PROJECT_NAME}-test src/test/utest.cpp)
+		if(TARGET ${PROJECT_NAME}-test)
+				target_link_libraries(${PROJECT_NAME}-test)
+		endif()
 endif()
 
 ## Add folders to be run by python nosetests
