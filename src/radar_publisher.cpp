@@ -115,7 +115,6 @@ void process_json(radar_omnipresense::radar_data *data, std::vector<std::string>
 {
   for(int i = 0; i < msgs.size(); i++)
   {
-    //TODO parser does not accept empty msgs or the {"unknown-command":"n"} type of command. Need to handle this case so that the code can move on to the next msg.
     std::string single_msg = msgs[i];
     if (single_msg.empty())
     {
@@ -170,6 +169,7 @@ void process_json(radar_omnipresense::radar_data *data, std::vector<std::string>
       for (int i = 0; i < document["FFT"].Size(); i++)
       {
         //FFT is an array of 1x2 array, each element represent a different channel. Either i or q.
+         TODO label as "i" is the real component and "q" is actually an Imaginary component.
         const Value& a = document["FFT"][i].GetArray();  
         data->fft_data.i.push_back(a[0].GetFloat());
         data->fft_data.q.push_back(a[1].GetFloat());
