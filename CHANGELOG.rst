@@ -6,18 +6,11 @@ Changelog for package radar_omnipresense
 ------------------
 * commiting the 2011 api version of the code. The branch RapidJSON_preserve contians 2015 api version. That branch should not be modified at all
 * altered findrapidjson
-* deleted old findrapidjson
 * updated CMakeLists and utest to 'pass'
 * adding files for very simple 'unit testing'
 * Updated the readme to no longer say that you need to download and install LinuxCommConnection for the package
-* modified change log
 * Added the lib file so that linuxcommconnection is no longer a depedency issue
-* Added lib file so that linnux comm connection is no longer a dependency issue
-* address RapidJSON dependency
-* added raw msgs
 * Prepping for ros package submittal
-* Contributors: Garren Hendricks, Jim Whitfield
-
 * Added the lib file so that linuxcommconnection is no longer a depedency issue
 * address RapidJSON dependency
 * added raw msgs
