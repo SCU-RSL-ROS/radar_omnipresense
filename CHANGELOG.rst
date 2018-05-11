@@ -2,8 +2,8 @@
 Changelog for package radar_omnipresense
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.1.0 (2018-05-11)
+------------------
 * commiting the 2011 api version of the code. The branch RapidJSON_preserve contians 2015 api version. That branch should not be modified at all
 * altered findrapidjson
 * deleted old findrapidjson
