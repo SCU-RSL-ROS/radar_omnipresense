@@ -168,8 +168,8 @@ void process_json(radar_omnipresense::radar_data *data, std::vector<std::string>
       {
         //FFT is an array of 1x2 array, each element represent a different channel. Either i or q.
         const Value& a = document["FFT"][i].GetArray();  
-        data->fft_data.i.push_back(a[0].GetFloat());
-        data->fft_data.q.push_back(a[1].GetFloat());
+        data->fft_data.real.push_back(a[0].GetFloat());
+        data->fft_data.imaginary.push_back(a[1].GetFloat());
        }  
     }
     else if (raw_I || raw_Q)

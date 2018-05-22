@@ -1,2 +1,2 @@
-float32[] i
-float32[] q
+float32[] real
+float32[] imaginary
