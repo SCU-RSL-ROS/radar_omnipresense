@@ -38,10 +38,15 @@ the License.
 #include <thread>
 #include <vector>
 #include "../lib/SerialConnection.h"
-#include "rapidjson/document.h"
-using namespace rapidjson;
+
+#define RAPIDJSON_NAMESPACE radar_omnipresense_rapidjson     
+#include "../lib/rapidjson/include/rapidjson/document.h"
+
+using namespace radar_omnipresense_rapidjson;
+
 
 SerialConnection * con;
+
 bool OF = false;
 bool OJ = false;
 bool ORI = false;
@@ -121,7 +126,7 @@ void process_json(radar_omnipresense::radar_data *data, std::vector<std::string>
     }
     //default template parameter uses UTF8 and MemoryPoolAllocator. //creates a document DOM instant called document
     Document document; 
-     //document.Parse(msg.data->c_str()); //parsing the json string msg.data with format{"speed":#.##,"direction":"inbound (or outbound)","time":###,"tick":###}
+     //document.Parse(msg.data->c_str()); //parsing the json string msg.data with format{"speed":#.##,"direction":"inbound (or    					  outbound)","time":###,"tick":###}
      document.Parse(single_msg.c_str());
      assert(document.IsObject());
      //ROS_INFO("Passed assertion");
