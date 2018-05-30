@@ -37,10 +37,10 @@ the License.
 #include <string>
 #include <thread>
 #include <vector>
-#include "../lib/SerialConnection.h"
+#include "../lib/serialconnection/SerialConnection.h"
 
 #define RAPIDJSON_NAMESPACE radar_omnipresense_rapidjson     
-#include "../lib/rapidjson/include/rapidjson/document.h"
+#include "../lib/rapidjson/document.h"
 
 using namespace radar_omnipresense_rapidjson;
 
