@@ -172,7 +172,7 @@ void process_json(radar_omnipresense::radar_data *data, std::vector<std::string>
       for (int i = 0; i < document["FFT"].Size(); i++)
       {
         //FFT is an array of 1x2 array, each element represent a different channel. Either i or q.
-         TODO label as "i" is the real component and "q" is actually an Imaginary component.
+         //TODO label as "i" is the real component and "q" is actually an Imaginary component.
         const Value& a = document["FFT"][i].GetArray();  
         data->fft_data.real.push_back(a[0].GetFloat());
         data->fft_data.imaginary.push_back(a[1].GetFloat());
