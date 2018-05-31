@@ -2,6 +2,15 @@
 Changelog for package radar_omnipresense
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* added folder
+* serialconnectionfolder
+* added rapidjson, which has all needed header files
+* added rapidjson folder in lib folder
+* added rapidjson include the lib folder and 'wrapped' it in a radar_omnipresense namespace
+* Contributors: Garren Hendricks, Jim Whitfield, garrenhendricks
+
 0.1.0 (2018-05-11)
 ------------------
 * commiting the 2011 api version of the code. The branch RapidJSON_preserve contians 2015 api version. That branch should not be modified at all
