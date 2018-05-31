@@ -37,15 +37,20 @@ the License.
 #include <string>
 #include <thread>
 #include <vector>
-#include "../lib/SerialConnection.h"
-#include "rapidjson/document.h"
-using namespace rapidjson;
+#include "../lib/serialconnection/SerialConnection.h"
+
+#define RAPIDJSON_NAMESPACE radar_omnipresense_rapidjson     
+#include "../lib/rapidjson/document.h"
+
+using namespace radar_omnipresense_rapidjson;
+
 
 SerialConnection * con;
-//bool OF = false;
+
+bool OF = false;
 bool OJ = false;
-//bool ORI = false;
-//bool ORQ = false;
+bool ORI = false;
+bool ORQ = false;
 /*!
 * \service function to send api commands to radar device
 *
@@ -91,7 +96,6 @@ bool api(radar_omnipresense::SendAPICommand::Request &req, radar_omnipresense::S
     res.response = "true";
   }
   OJ = true;
-/*
   if (req.command == "OF")
   {
     OF = true;
@@ -101,7 +105,6 @@ bool api(radar_omnipresense::SendAPICommand::Request &req, radar_omnipresense::S
     ORI = true;
     ORQ = true;
   }
-*/
   return true;
 }
 /*!
@@ -120,19 +123,20 @@ void process_json(radar_omnipresense::radar_data *data, std::vector<std::string>
     {
       continue;
     }
-    Document document;
-    //document.Parse(msg.data->c_str()); //parsing the json string msg.data with format{"speed":#.##,"direction":"inbound (or 		outbound)","time":###,"tick":###}
-    document.Parse(single_msg.c_str());
-    assert(document.IsObject());
-    //ROS_INFO("Passed assertion");
-    //case for when the radar outputs the JSON string {"OutputFeature":"@"}. This is not compatible with parsing into the ROS message.
-   if (document.HasMember("OutputFeature")) 
+    //default template parameter uses UTF8 and MemoryPoolAllocator. //creates a document DOM instant called document
+    Document document; 
+     //document.Parse(msg.data->c_str()); //parsing the json string msg.data with format{"speed":#.##,"direction":"inbound (or    					  outbound)","time":###,"tick":###}
+     document.Parse(single_msg.c_str());
+     assert(document.IsObject());
+     //ROS_INFO("Passed assertion");
+     //case for when the radar outputs the JSON string {"OutputFeature":"@"}. This is not compatible with parsing into the ROS message.
+     if (document.HasMember("OutputFeature")) 
     {
       ROS_INFO("OutputFeature");
       return;
     }
   
-    //bool fft = document.HasMember("FFT");
+    bool fft = document.HasMember("FFT");
     bool dir = document.HasMember("direction");
     bool raw_I = document.HasMember("I");
     bool raw_Q = document.HasMember("Q");
@@ -162,7 +166,6 @@ void process_json(radar_omnipresense::radar_data *data, std::vector<std::string>
       data->objnum = 1;
       data->metadata.stamp = ros::Time::now(); 
     }
-    /*
     //indexes and creates fft field for publishing.
     else if (fft)
     {
@@ -171,8 +174,8 @@ void process_json(radar_omnipresense::radar_data *data, std::vector<std::string>
         //FFT is an array of 1x2 array, each element represent a different channel. Either i or q.
          TODO label as "i" is the real component and "q" is actually an Imaginary component.
         const Value& a = document["FFT"][i].GetArray();  
-        data->fft_data.i.push_back(a[0].GetFloat());
-        data->fft_data.q.push_back(a[1].GetFloat());
+        data->fft_data.real.push_back(a[0].GetFloat());
+        data->fft_data.imaginary.push_back(a[1].GetFloat());
        }  
     }
     else if (raw_I || raw_Q)
@@ -194,7 +197,6 @@ void process_json(radar_omnipresense::radar_data *data, std::vector<std::string>
         }
       }
     }
-    */
     else 
     {
       ROS_INFO("Unsupported message type");

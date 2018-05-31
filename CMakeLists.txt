@@ -17,8 +17,8 @@ find_package(catkin REQUIRED COMPONENTS
 ## System dependencies are found with CMake's conventions
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR})
 find_package(RapidJSON REQUIRED)
-#ok, so, the FindRapidJSON.cmake file will have set RAPIDJ.. but here cmake thinks it's
-#going to be RapidJ and warn us.  Hack FindRapidJSON to set both and quell the warning
+#find_package(rapidjson-dev REQUIRED)
+>>>>>>> rapidjson_local
 include_directories("${RapidJSON_INCLUDE_DIRS}")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${RAPIDJSON_CXX_FLAGS}")
 
@@ -118,7 +118,7 @@ add_subdirectory(${PROJECT_SOURCE_DIR}/lib)
 
 
 
-add_executable(radar_publisher src/radar_publisher.cpp lib/SerialConnection.cpp)
+add_executable(radar_publisher src/radar_publisher.cpp lib/serialconnection/SerialConnection.cpp)
 target_link_libraries(radar_publisher ${catkin_LIBRARIES})
 add_dependencies(radar_publisher radar_omnipresense_generate_messages_cpp)
 
@@ -199,10 +199,10 @@ include_directories(
 
 ## Add gtest based cpp test target and link libraries
 if(CATKIN_ENABLE_TESTING)
-	catkin_add_gtest(${PROJECT_NAME}-test src/test/utest.cpp)
-	if(TARGET ${PROJECT_NAME}-test)
-		target_link_libraries(${PROJECT_NAME}-test)
-	endif()
+		catkin_add_gtest(${PROJECT_NAME}-test src/test/utest.cpp)
+		if(TARGET ${PROJECT_NAME}-test)
+				target_link_libraries(${PROJECT_NAME}-test)
+		endif()
 endif()
 
 ## Add folders to be run by python nosetests
