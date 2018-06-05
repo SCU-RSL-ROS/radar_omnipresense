@@ -16,10 +16,8 @@ find_package(catkin REQUIRED COMPONENTS
 
 ## System dependencies are found with CMake's conventions
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR})
-find_package(RapidJSON REQUIRED)
 #find_package(rapidjson-dev REQUIRED)
-include_directories("${RapidJSON_INCLUDE_DIRS}")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${RAPIDJSON_CXX_FLAGS}")
+
 
 
 ## Uncomment this if the package has a setup.py. This macro ensures
@@ -108,7 +106,6 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${RAPIDJSON_CXX_FLAGS}")
 catkin_package(
 #  INCLUDE_DIRS include
   CATKIN_DEPENDS roscpp rospy std_msgs message_generation
-  DEPENDS RapidJSON
   #DEPENDS rapidjson-dev
 )
 
