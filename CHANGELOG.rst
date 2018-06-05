@@ -9,7 +9,7 @@ Changelog for package radar_omnipresense
 * added rapidjson, which has all needed header files
 * added rapidjson folder in lib folder
 * added rapidjson include the lib folder and 'wrapped' it in a radar_omnipresense namespace
-* Contributors: Garren Hendricks, Jim Whitfield, garrenhendricks
+* Contributors: Garren Hendricks, Jim Whitfield
 
 0.1.0 (2018-05-11)
 ------------------

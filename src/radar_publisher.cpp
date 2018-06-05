@@ -211,7 +211,7 @@ void process_json(radar_omnipresense::radar_data *data, std::vector<std::string>
 */
 int get_msgs_filled() 
 {
-      bool msgs_filled[] = {OJ/*, OF, ORI, ORQ*/};
+      bool msgs_filled[] = {OJ , OF, ORI, ORQ};
       int ret_val = 0;
       for (int k = 0; k < 4; k++)
       {
