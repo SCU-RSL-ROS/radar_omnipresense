@@ -4,7 +4,7 @@ Changelog for package radar_omnipresense
 
 0.2.0 (2018-05-31)
 ------------------
-* serialconnectionfolder
+* serialconnection folder
 * added rapidjson, which has all needed header files
 * added rapidjson folder in lib folder
 * added rapidjson include the lib folder and 'wrapped' it in a radar_omnipresense namespace
