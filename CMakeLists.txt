@@ -114,7 +114,7 @@ add_subdirectory(${PROJECT_SOURCE_DIR}/lib)
 
 
 
-add_executable(radar_publisher src/radar_publisher.cpp lib/serialconnection/SerialConnection.cpp)
+add_executable(radar_publisher src/radar_publisher.cpp lib/cjson/cJSON.c lib/serialconnection/SerialConnection.cpp)
 target_link_libraries(radar_publisher ${catkin_LIBRARIES})
 add_dependencies(radar_publisher radar_omnipresense_generate_messages_cpp)
 
