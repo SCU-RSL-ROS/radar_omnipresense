@@ -44,10 +44,13 @@ the License.
 
 SerialConnection * con;
 
-bool OF = false;
-bool OJ = false;
-bool ORI = false;
-bool ORQ = false;
+/* Originally written to expect some combination of speed FFT  and raw data.  
+* However, we're not going to support FFT or RAW at the moment, and even 
+* if/when we do,  I and Q are in the same JSON message, so merge them down */
+bool OJ = true;
+bool OFft = false;
+bool ORaw = false;
+
 /*!
 * \service function to send api commands to radar device
 *
@@ -57,26 +60,33 @@ bool ORQ = false;
 */
 bool api(radar_omnipresense::SendAPICommand::Request &req, radar_omnipresense::SendAPICommand::Response &res) 
 {
-  res.response = "false";
   if (req.command == "Oj")
   {
-    ROS_INFO("Cannot turn JSON mode off");
+    ROS_INFO("JSON mode required.  Wisely refusing to turn JSON mode off");
     return true;
   }
+  if (req.command == "OR" || req.command == "OF")
+  {
+    ROS_INFO("FFT and RAw output are not currently supported.");
+    return true;
+  }
+
   //writes the api input to the serial port
+  res.response = "false";
   con->write(std::string(req.command.c_str())); 
   con->clearBuffer();
-  //output for user to see that correct input was sent to the radar
+
+  //logging output for user to see that correct input was sent to the radar
   ROS_INFO("API command sent: %s", req.command.c_str()); 
-  con->waitForData();
+  con->waitForData(); // Hm, not sure why 2 waitForData's
   con->waitForData();
   std::string command_response = con->readString();
   ROS_INFO("Command_response is: %s", command_response.c_str());
   std::size_t found_open_brace = command_response.find("{");
   std::size_t found_close_brace = command_response.find("}");
-  bool open_brace = found_open_brace == std::string::npos;
-  bool close_brace = found_close_brace == std::string::npos;
-  if ((open_brace) && (close_brace))
+  bool open_brace_missing = (found_open_brace == std::string::npos);
+  bool close_brace_missing = (found_close_brace == std::string::npos);
+  if ((open_brace_missing) && (close_brace_missing))
   {
     ROS_INFO("ERROR: Response not received");
     return true;
@@ -85,13 +95,18 @@ bool api(radar_omnipresense::SendAPICommand::Request &req, radar_omnipresense::S
   cJSON *json = cJSON_Parse(whole_msg.c_str()); 
   char *json_as_string = cJSON_Print(json);
   ROS_INFO("Received: %s", json_as_string);
+  free(json);
   return true;
 }
+
+
 /*!
-* \this function intakes a the location of the msg struct, whole message, serial port and parses 
-* into the member fields of the struct.
+* \this function intakes the location of the msg struct, whole message, serial port and 
+* then parses into the member fields of the struct.
 *
-* This function takes in the output of std::string getMessage(CommConnection *connection) along with the  memory location of the package's custom message * * structure and the serialPort and it uses the JSON parser to populate the members of the package's custom message structure. 
+* This function takes in the output of std::string getMessage(CommConnection *connection) 
+* along with the object ptr of the package's message structure and the serialPort.
+* It uses the JSON parser to populate the members of the package's custom message structure.
 *
 */
 void process_json(radar_omnipresense::radar_data *data, std::vector<std::string> msgs, std::string serialPort)
@@ -115,51 +130,52 @@ void process_json(radar_omnipresense::radar_data *data, std::vector<std::string>
 	return;
       }
     
-      const cJSON *speed = cJSON_GetObjectItemCaseSensitive(json, "speed");
-  /*
-      bool fft = document.HasMember("FFT");
-      bool speed = document.HasMember("speed");
-      bool dir = document.HasMember("direction");
-      bool raw_I = document.HasMember("I");
-      bool raw_Q = document.HasMember("Q");
-  */
-      //fills in info.direction with a converted c++ string and only does so if direction is not empty.
-      if (speed != NULL)
-      {
-	//accesses the value for speed and assigns it to info.speed  
-        // deal with it whether it's a value (like pre 1.2) or string (1.2.0)
-        if (speed->valuestring == NULL)
-	  data->speed = speed->valuedouble;
-        else
-          data->speed = atof(speed->valuestring);
+    const cJSON *speed = cJSON_GetObjectItemCaseSensitive(json, "speed");
+/* FFT parsing isn't required.
+    bool fft = document.HasMember("FFT");
+    bool raw_I = document.HasMember("I");
+    bool raw_Q = document.HasMember("Q");
+*/
+    //parse speed, adapting to all API versions.  (value as string or number, optional 'direction') 
+    if (speed != NULL)
+    {
+      //accesses the value for speed and assigns it to info.speed
+      // deal with it whether it's a value (like pre 1.2) or string (1.2.0)
+      if (speed->valuestring == NULL)
+	data->speed = speed->valuedouble;
+      else
+        data->speed = atof(speed->valuestring);
 
-	if (data->speed >= 0)
-	  data->direction = "inbound";
-	else
-	  data->direction = "outbound";
-	// just in case a direction was received (v1.0), use it.
-	const cJSON *direction = cJSON_GetObjectItemCaseSensitive(json, "direction");
-	if (direction != NULL) {
-	  data->direction = direction->valuestring;
-	}
-
-	//accesses the numerical value for time and assigns it to info.time
-	const cJSON *time = cJSON_GetObjectItemCaseSensitive(json, "time");
-	if (time != NULL) {
-	  data->time = time->valuedouble;
-          // in case it's an old 241 v 1.1
-	  const cJSON *tick = cJSON_GetObjectItemCaseSensitive(json, "tick");
-          if (tick != NULL) {
-              data->time += (float)tick->valueint/1000.0;
-          }
+      if (data->speed >= 0)
+	data->direction = "inbound";
+      else if (data->speed == 0)
+	data->direction = "still";
+      else
+	data->direction = "outbound";
+      // just in case a direction was received (v1.0), it should override sign
+      const cJSON *direction = cJSON_GetObjectItemCaseSensitive(json, "direction");
+      if (direction != NULL) {
+	data->direction = direction->valuestring;
       }
 
-      //place holder for field sensorid
+      //accesses the numerical value for time and assigns it to info.time
+      const cJSON *time = cJSON_GetObjectItemCaseSensitive(json, "time");
+      if (time != NULL) {
+	data->time = time->valuedouble;
+        // in case it's an old 241 v 1.1
+	const cJSON *tick = cJSON_GetObjectItemCaseSensitive(json, "tick");
+        if (tick != NULL) {
+            data->time += (float)tick->valueint/1000.0;
+        }
+      }
+
+      //place holder for field sensorid.  For now, use port, and don't differentiate targets
       data->sensorid = serialPort; 
       data->objnum = 1;
       data->metadata.stamp = ros::Time::now(); 
     }
-/* FFT and RAW are not required yet
+
+/* FFT not required yet
     //indexes and creates fft field for publishing.
     else if (fft)
     {
@@ -172,25 +188,6 @@ void process_json(radar_omnipresense::radar_data *data, std::vector<std::string>
         data->fft_data.imaginary.push_back(a[1].GetFloat());
        }  
     }
-    else if (raw_I || raw_Q)
-    {
-      if (raw_I)
-      {
-        for (int i = 0; i < document["I"].Size(); i++)
-        {
-          const Value& b = document["I"];
-          data->raw_data.i.push_back(b[i].GetInt());  
-         }
-       }
-       if (raw_Q)
-       {
-         for (int i = 0; i < document["Q"].Size(); i++)
-        {
-          const Value& c = document["Q"];
-          data->raw_data.q.push_back(c[i].GetInt());
-        }
-      }
-    }
 */
     else 
     {
@@ -201,15 +198,17 @@ void process_json(radar_omnipresense::radar_data *data, std::vector<std::string>
 }
 
 /*!
-* \this function builds 
+* \this function determines the number of report lines expected per actual 
+* radar sample.  As only speed is implemented, this is going to be "1" 
 *
-* This function
+* This functio determines the number of report lines expected per actual 
+* radar sample.  As only speed is implemented, this is going to be "1"
 */
 int get_msgs_filled() 
 {
-      bool msgs_filled[] = {OJ , OF, ORI, ORQ};
+      bool msgs_filled[] = {OJ , OFft, ORaw};
       int ret_val = 0;
-      for (int k = 0; k < 4; k++)
+      for (int k = 0; k < sizeof(msgs_filled)/sizeof(msgs_filled[0]); k++)
       {
         if (msgs_filled[k])
         {
@@ -290,16 +289,19 @@ int main(int argc, char** argv)
   //the name of this node: radar_publisher
   ros::init(argc, argv, "radar_publisher"); 
   ros::NodeHandle nh;//("~");
+
   std::string serialPort;
   // sets serialPort to "serialPort". "serialPort" is defined in package launch file. 
   // "/dev/ttyACM0" is the default value if launch does not set "serialPort" 
   // or launch is not used.
   nh.param<std::string>("serialPort", serialPort,"/dev/ttyACM0");
-  //the node is created. node publishes to topic "radar" using radar_omnipresense::radar_data 
-  // messages and will buffer up to 1000 messages before beginning to throw away old ones.                                                                                          
+
+  //the node is created and publishes to topic "radar" using radar_omnipresense::radar_data 
+  //messages and will buffer up to 1000 messages before beginning to throw away old ones.
   ros::Publisher radar_pub = nh.advertise<radar_omnipresense::radar_data>("radar_report",1000); 
   //the service "send_api_commands" is created and advertised over ROS
   ros::ServiceServer radar_srv = nh.advertiseService("send_api_command", api);  
+
   //ROS loop rate, currently sent to 60Hz.
   ros::Rate loop_rate(1000); 
   //Open USB port serial connection for two way communication
@@ -309,8 +311,7 @@ int main(int argc, char** argv)
   int is_initialized = 0;
   while (ros::ok())
   {
-    bool connected = connection.isConnected();
-    if (connected)
+    if (connection.isConnected())
     {
       if (! is_initialized)
       {
@@ -320,41 +321,44 @@ int main(int argc, char** argv)
         ROS_INFO("setting radar settings");
         connection.clearBuffer();
         connection.begin();
-        connection.write("OJ");
-        // In 1.1 and earlier, seconds came in "time" and milliseconds in "tick"
-        // In JSON, that was always present, and never in 'non JSON'
+        connection.write("OJ");  // force JSON mode even for speed
+
+        // Note: In 1.1 and earlier, seconds came in "time" and milliseconds in "tick"
+        // In JSON, that was always present, and never present in 'non JSON'
         // The new command OT will do nothing in pre 1.2 and will turn on time
-        // in either non-JSON or JSON.  Time is in sec.millis
+        // in either non-JSON or JSON nowadays.  Now, Time is in sec.millis
         // The latest JSON processing code will add tick to time (if found)
         // so that aligns both.
         connection.write("OT"); // In 1.2, this turns on "time" in sec.millis
-        OJ = true;
+
         connection.write("Of"); // no FFT
         connection.write("Or"); // no raw
-        connection.write("F2");
+        connection.write("F2"); // 2 decimals
         connection.clearBuffer();
       }
+
       radar_omnipresense::radar_data info; 
-      radar_omnipresense::radar_data info_out;
-      //creats an instant of the radar_data structure named info. format: 
+      //creates an instance of the radar_data structure named info
       std::vector<std::string> msgs = getMessage(&connection);
+
+      // ok, and this is the big action of this driver.  Parse it and send it.
       ROS_INFO("about to process incoming json message");
       process_json(&info, msgs, serialPort);
       radar_pub.publish(info);
+
       //becomes neccessary for subscriber callback functions
       ros::spinOnce();  
       // forces loop to wait for the remaining loop time to finish before starting over
       loop_rate.sleep();
       is_initialized=true;
     }
-    else if (connected == 0)
+    else
     {
       ROS_INFO("Not Connected");
       connection.begin();
       is_initialized = 0;
       ros::spinOnce();
       loop_rate.sleep();
-      continue;
     }
   }
   ros::shutdown();
