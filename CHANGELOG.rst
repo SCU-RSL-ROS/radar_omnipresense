@@ -2,8 +2,8 @@
 Changelog for package radar_omnipresense
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.3.0 (2018-09-10)
+------------------
 * Remove use of rapidjson
 * make compatible with OPS241 (API v 1.0-1-1) and OPS242 (v1.2 and beyond)
 * Contributors: Jim Whitfield
