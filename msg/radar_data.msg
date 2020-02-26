@@ -6,7 +6,7 @@ float32 objnum
 Header  metadata
 fft     fft_data
 raw     raw_data
-
+float32 range
 
 
 
