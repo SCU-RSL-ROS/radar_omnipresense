@@ -2,10 +2,6 @@
 A Robotic Operating System (ROS) publisher and service for the OmniPreSense short range radar.
  
 ### Package Dependencies
- You will need to download and install:
-* [rapidJson]( https://github.com/Tencent/rapidjson)
-
-in order to successfully build the package with the ROS development tools.
 
 In order to run (and build) this package, a system has to have the at least the ROS-base package.
 * [ROS]( http://www.ros.org/install/ )
